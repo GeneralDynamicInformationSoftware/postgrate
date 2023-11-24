@@ -1,4 +1,5 @@
 import fs from 'fs';
+import init from './init.command.js';
 
 export default function (name: string): void {
   if (!name) {
@@ -21,6 +22,9 @@ Migration + rollback file created: ${fileName}
 }
 
 function generateMigrationFileName(name: string): string {
+  if (!fs.existsSync('db/migrations')) {
+    init();
+  }
   const timestamp = new Date().getTime();
   const fileName = `${timestamp}-${name}.sql`;
   return fileName;

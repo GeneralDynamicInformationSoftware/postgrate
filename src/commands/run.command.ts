@@ -1,8 +1,7 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import fs from 'fs/promises';
-import pkg from 'pg';
-import readline from 'readline/promises';
+import fsSync from 'fs';
+import init from './init.command.js';
+import { confirmation, pool } from '../modules/index.js';
 
 export default async function () {
   await createMigrationTable();
@@ -12,12 +11,6 @@ export default async function () {
   return pool.end();
 }
 
-interface IHandleConfirmationInput {
-  pendingMigrations: string[];
-}
-
-const { Pool } = pkg;
-const pool = new Pool({ connectionString: process.env.PG_DATABASE_URL });
 const client = await pool.connect();
 const historicMigrations = new Set();
 
@@ -40,6 +33,9 @@ async function fetchHistoricMigrations(): Promise<void> {
 }
 
 async function getMigrationFileNames(): Promise<string[]> {
+  if (!fsSync.existsSync('db/migrations')) {
+    init();
+  }
   const files = await fs.readdir('db/migrations');
   return files.sort(
     (a, b) => parseInt(a.split('-')[0]) - parseInt(b.split('-')[0]),
@@ -54,29 +50,6 @@ async function determinePendingMigrations(): Promise<string[]> {
   return pendingMigrations;
 }
 
-async function handleConfirmation({
-  pendingMigrations,
-}: IHandleConfirmationInput): Promise<void> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const answer = await rl.question(
-    `\nThe following migrations will be executed:\n\n\t${pendingMigrations.join(
-      '\n\t',
-    )}.\n\nDo you want to continue? (y/n): `,
-  );
-
-  if (answer !== 'y') {
-    console.log('\n🚫 Aborting migration 🚫\n');
-    pool.end();
-    process.exit(0);
-  }
-
-  rl.close();
-}
-
 async function runMigration(migration: string): Promise<void> {
   const filePath = `db/migrations/${migration}`;
   const file = await fs.readFile(filePath, 'utf-8');
@@ -85,21 +58,16 @@ async function runMigration(migration: string): Promise<void> {
     'INSERT INTO migrations (name) VALUES ($1) RETURNING id;',
     [migration],
   );
-  console.log(`\tMigration ${migration} [id: ${rows[0].id}] has been executed`);
+  console.log(
+    `\tMigration ${migration} [id: ${rows[0].id}] has been executed 🚀`,
+  );
 }
 
-async function runMigrations(): Promise<void> {
-  const pendingMigrations = await determinePendingMigrations();
-
-  if (!pendingMigrations.length) {
-    console.log('No migrations to run');
-    pool.end();
-    process.exit(0);
-  }
-
-  if (process.env.NODE_ENV !== 'production')
-    await handleConfirmation({ pendingMigrations });
-
+async function transact({
+  pendingMigrations,
+}: {
+  pendingMigrations: string[];
+}): Promise<void> {
   try {
     await client.query('BEGIN');
     console.log('\n');
@@ -120,4 +88,17 @@ async function runMigrations(): Promise<void> {
   } finally {
     client.release();
   }
+}
+
+async function runMigrations(): Promise<void> {
+  const pendingMigrations = await determinePendingMigrations();
+
+  if (!pendingMigrations.length) {
+    console.log('\nNo migrations to run\n');
+    pool.end();
+    process.exit(0);
+  }
+
+  await confirmation(pendingMigrations);
+  await transact({ pendingMigrations });
 }

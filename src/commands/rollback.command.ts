@@ -1,16 +1,12 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import fs from 'fs/promises';
 import fsSync from 'fs';
-import pkg from 'pg';
-import readline from 'readline/promises';
+import { confirmation, pool } from '../modules/index.js';
 
 export default async function (migrationId: string) {
   validate(migrationId);
   const name = await getMigrationRecordName(migrationId);
   checkRollbackFileExists(name);
-  await handleConfirmation({ name });
+  await confirmation(name);
   await rollback({ name, migrationId });
   pool.end();
 }
@@ -19,9 +15,6 @@ interface IRollback {
   name: string;
   migrationId: string;
 }
-
-const { Pool } = pkg;
-const pool = new Pool({ connectionString: process.env.PG_DATABASE_URL });
 
 function validate(migrationId?: string): void {
   if (!migrationId) {
@@ -48,25 +41,6 @@ function checkRollbackFileExists(name: string): void {
     console.error(`Rollback file ${name} does not exist`);
     process.exit(1);
   }
-}
-
-async function handleConfirmation({ name }: { name: string }): Promise<void> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const answer = await rl.question(
-    `\nThe following migration will be rolled back:\n\n\t${name}.\n\nDo you want to continue? (y/n): `,
-  );
-
-  if (answer !== 'y') {
-    console.log('\n🚫 Aborting migration 🚫\n');
-    pool.end();
-    process.exit(0);
-  }
-
-  rl.close();
 }
 
 async function rollback({ name, migrationId }: IRollback): Promise<void> {

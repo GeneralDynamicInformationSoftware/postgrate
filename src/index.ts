@@ -19,7 +19,7 @@ switch (command) {
 
   case '-r':
   case 'run':
-    run();
+    await run();
     break;
 
   case '-rb':
