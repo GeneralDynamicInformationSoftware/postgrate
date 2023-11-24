@@ -1,12 +1,24 @@
 {
   "name": "postgrate",
   "version": "1.0.0",
-  "main": "index.js",
+  "exports": "./dist/bin/index.js",
   "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k yarn:watch yarn:watch:nodemon",
+    "watch": "tsc -w",
+    "watch:nodemon": "nodemon dist/bin/index.js"
+  },
+  "bin": {
+    "postgrate": "./dist/bin/index.js"
+  },
   "devDependencies": {
     "@types/node": "^20.9.5",
+    "@types/pg": "^8.10.9",
     "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
     "prettier": "^3.1.0",
     "typescript": "^5.3.2",
     "vitest": "^0.34.6"
