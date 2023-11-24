@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import dotenv from 'dotenv';
-dotenv.config();
 import { help, init, list, make, rollback, run } from './commands/index.js';
 
 const args = process.argv.slice(2);

@@ -4,17 +4,19 @@ export default function (): void {
 Usage: postgrate <command> [options]
 
 Commands:
-  -i, init      Initialize postgrate
-  -m, make      Create a migration file
-  -r, run       Run all pending migrations
-  -rb, rollback Rollback a migration
-  -h, help      Show help
+  -h,  help      Show help
+  -i,  init      Initialize postgrate
+  -l,  list      List all migrations
+  -m,  make      Create a migration file
+  -r,  run       Run all pending migrations
+  -rb, rollback  Rollback a migration
 
 Examples:
-  postgrate -i
-  postgrate -m create_users_table
-  postgrate -r
-  postgrate -rb 1
-  postgrate -h
+  $ postgrate -h
+  $ postgrate -i
+  $ postgrate -l
+  $ postgrate -m create-users-table
+  $ postgrate -r
+  $ postgrate -rb 1
 `);
 }
