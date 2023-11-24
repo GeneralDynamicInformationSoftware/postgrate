@@ -1,5 +1,8 @@
 {
   "name": "postgrate",
+  "author": {
+    "name": "General Dynamic Information Technology"
+  },
   "version": "1.0.0",
   "exports": "./dist/bin/index.js",
   "license": "MIT",
@@ -7,7 +10,8 @@
   "scripts": {
     "dev": "concurrently -k yarn:watch yarn:watch:nodemon",
     "watch": "tsc -w",
-    "watch:nodemon": "nodemon dist/bin/index.js"
+    "watch:nodemon": "nodemon dist/bin/index.js",
+    "pretty": "prettier . --write"
   },
   "bin": {
     "postgrate": "./dist/bin/index.js"

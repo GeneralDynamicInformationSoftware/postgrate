@@ -13,7 +13,6 @@ export default async function (migrationId: string) {
   await handleConfirmation({ name });
   await rollback({ name, migrationId });
   pool.end();
-  process.exit(0);
 }
 
 interface IRollback {
@@ -58,7 +57,7 @@ async function handleConfirmation({ name }: { name: string }): Promise<void> {
   });
 
   const answer = await rl.question(
-    `\nThe following migration will be rolled back:\n\n\t${name}.\n\nDo you want to continue? (y/n): `
+    `\nThe following migration will be rolled back:\n\n\t${name}.\n\nDo you want to continue? (y/n): `,
   );
 
   if (answer !== 'y') {

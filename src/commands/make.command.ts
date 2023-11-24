@@ -16,7 +16,7 @@ export default function (name: string): void {
   console.log(
     `
 Migration + rollback file created: ${fileName}
-`
+`,
   );
 }
 

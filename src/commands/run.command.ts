@@ -39,17 +39,17 @@ async function fetchHistoricMigrations(): Promise<void> {
   rows.forEach((row) => historicMigrations.add(row.name));
 }
 
-async function getMigrationFileNames() {
+async function getMigrationFileNames(): Promise<string[]> {
   const files = await fs.readdir('db/migrations');
   return files.sort(
-    (a, b) => parseInt(a.split('-')[0]) - parseInt(b.split('-')[0])
+    (a, b) => parseInt(a.split('-')[0]) - parseInt(b.split('-')[0]),
   );
 }
 
-async function determinePendingMigrations() {
+async function determinePendingMigrations(): Promise<string[]> {
   const files = await getMigrationFileNames();
   const pendingMigrations = files.filter(
-    (file) => !historicMigrations.has(file)
+    (file) => !historicMigrations.has(file),
   );
   return pendingMigrations;
 }
@@ -64,8 +64,8 @@ async function handleConfirmation({
 
   const answer = await rl.question(
     `\nThe following migrations will be executed:\n\n\t${pendingMigrations.join(
-      '\n\t'
-    )}.\n\nDo you want to continue? (y/n): `
+      '\n\t',
+    )}.\n\nDo you want to continue? (y/n): `,
   );
 
   if (answer !== 'y') {
@@ -83,7 +83,7 @@ async function runMigration(migration: string): Promise<void> {
   await client.query(file);
   const { rows } = await client.query(
     'INSERT INTO migrations (name) VALUES ($1) RETURNING id;',
-    [migration]
+    [migration],
   );
   console.log(`\tMigration ${migration} [id: ${rows[0].id}] has been executed`);
 }
