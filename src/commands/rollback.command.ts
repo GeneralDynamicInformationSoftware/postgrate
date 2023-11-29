@@ -37,14 +37,14 @@ async function getMigrationRecordName(id: string): Promise<string> {
 }
 
 function checkRollbackFileExists(name: string): void {
-  if (!fsSync.existsSync(`db/rollbacks/${name}`)) {
+  if (!fsSync.existsSync(`db/rollbacks/rb-${name}`)) {
     console.error(`Rollback file ${name} does not exist`);
     process.exit(1);
   }
 }
 
 async function rollback({ name, migrationId }: IRollback): Promise<void> {
-  const rollback = await fs.readFile(`db/rollbacks/${name}`, 'utf-8');
+  const rollback = await fs.readFile(`db/rollbacks/rb-${name}`, 'utf-8');
   await pool.query(rollback);
   await pool.query('DELETE FROM migrations WHERE id = $1', [migrationId]);
   console.log(`\nMigration ${name} rolled back\n`);

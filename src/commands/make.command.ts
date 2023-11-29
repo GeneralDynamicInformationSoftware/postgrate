@@ -9,7 +9,7 @@ export default function (name: string): void {
 
   const fileName = generateMigrationFileName(name);
   const migrationFilePath = `db/migrations/${fileName}`;
-  const rollbackFilePath = `db/rollbacks/${fileName}`;
+  const rollbackFilePath = `db/rollbacks/rb-${fileName}`;
 
   fs.writeFileSync(migrationFilePath, '');
   fs.writeFileSync(rollbackFilePath, '');
