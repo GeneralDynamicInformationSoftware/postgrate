@@ -3,10 +3,18 @@
   "author": {
     "name": "General Dynamic Information Software"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "exports": "./dist/bin/index.js",
+  "description": "Simple PostgreSQL migration tool for raw-SQL loving developers.",
   "license": "MIT",
   "type": "module",
+  "keywords": [
+    "postgres",
+    "migrations",
+    "database",
+    "sql",
+    "typescript"
+  ],
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
@@ -28,5 +36,9 @@
   "peerDependencies": {
     "dotenv": "^16.3.1",
     "pg": "^8.11.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GeneralDynamicInformationSoftware/postgrate.git"
   }
 }
