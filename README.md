@@ -19,17 +19,24 @@ $ yarn add postgrate
 
 ## Basic Usage
 
-After insallation, you can run the following command:
+After insallation, make sure that you have a `.env` file that looks like this:
+
+```Bash
+PG_DATABASE_URL=<your postgres connection url>
+```
+
+Once that's done, you can run the following command:
 
 ```bash
 $ postgrate init
 ```
 
 **\*Note:** in the current release of this package, this command is somewhat
-trivial as other core commands will perform initialization steps if they haven't
-been completed. The exception is the `rollback` command which will throw an
-error if another initializing command has not been previously run. This command
-has been included to accomodate future plans to support a configuration file.\*
+trivial as running the first migration will perform initialization steps if they
+haven't already been completed. Note that in all cases, you must run the `run`
+command at least once before running the `rollback` command, otherwise you will
+encounter an error. The `init` command has been included to accomodate future
+plans to support a configuration file.\*
 
 To create a migration, run:
 
@@ -44,7 +51,26 @@ db
  |_migrations
     |_<timestamp>-<your-migration-name>.sql
  |_rollbacks
+     |_rb-<timestamp>-<your-migration-name>.sql
 ```
+
+After you write your migration in the `.sql` migration file, run:
+
+```bash
+$ postgrate run
+```
+
+You should see the following output:
+
+```bash
+     Migration <timestamp>-<your-migration-name>.sql [id: 1] has been executed 🚀
+```
+
+## Things to Note
+
+This package will create a table in your database called `migrations`. While we
+hope to make this configurable in the future, for now this package will confilct
+with any concurrently used package that follows a similar strategy.
 
 ## Commands
 
