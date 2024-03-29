@@ -1,5 +1,6 @@
 import fs from 'fs';
 import init from './init.command.js';
+import config, { IConfig } from '../config.js';
 
 export default function (name: string): void {
   if (!name) {
@@ -7,12 +8,30 @@ export default function (name: string): void {
     process.exit(1);
   }
 
-  const fileName = generateMigrationFileName(name);
-  const migrationFilePath = `db/migrations/${fileName}`;
-  const rollbackFilePath = `db/rollbacks/rb-${fileName}`;
+  const {
+    rootDirectory,
+    migrationsDirectory,
+    rollbacksDirectory,
+    autoCreateRollbacks,
+    migrationsTableName,
+  } = config();
+
+  const fileName = generateMigrationFileName({
+    name,
+    config: {
+      rootDirectory,
+      migrationsDirectory,
+      rollbacksDirectory,
+      autoCreateRollbacks,
+      migrationsTableName,
+    },
+  });
+
+  const migrationFilePath = `${rootDirectory}/${migrationsDirectory}/${fileName}`;
+  const rollbackFilePath = `${rootDirectory}/${rollbacksDirectory}/rb-${fileName}`;
 
   fs.writeFileSync(migrationFilePath, '');
-  fs.writeFileSync(rollbackFilePath, '');
+  if (autoCreateRollbacks) fs.writeFileSync(rollbackFilePath, '');
 
   console.log(
     `
@@ -21,8 +40,14 @@ Migration + rollback file created: ${fileName}
   );
 }
 
-function generateMigrationFileName(name: string): string {
-  if (!fs.existsSync('db/migrations')) {
+function generateMigrationFileName({
+  name,
+  config,
+}: {
+  name: string;
+  config: IConfig;
+}): string {
+  if (!fs.existsSync(`${config.rootDirectory}/${config.migrationsDirectory}`)) {
     init();
   }
   const timestamp = new Date().getTime();

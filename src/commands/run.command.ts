@@ -2,11 +2,13 @@ import fs from 'fs/promises';
 import fsSync from 'fs';
 import init from './init.command.js';
 import { confirmation, pool } from '../modules/index.js';
+import Config, { IConfig } from '../config.js';
 
 export default async function () {
-  await createMigrationTable();
-  await fetchHistoricMigrations();
-  await runMigrations();
+  const config = Config();
+  await createMigrationTable(config);
+  await fetchHistoricMigrations(config);
+  await runMigrations(config);
 
   return pool.end();
 }
@@ -14,48 +16,59 @@ export default async function () {
 const client = await pool.connect();
 const historicMigrations = new Set();
 
-const migrationsTableQuery = `
-  CREATE TABLE IF NOT EXISTS migrations (
+async function createMigrationTable({
+  migrationsTableName,
+}: IConfig): Promise<void> {
+  await pool.query(`
+  CREATE TABLE IF NOT EXISTS ${migrationsTableName} (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT migrations_name_unique UNIQUE (name)
   );
-`;
-
-async function createMigrationTable(): Promise<void> {
-  await pool.query(migrationsTableQuery);
+`);
 }
 
-async function fetchHistoricMigrations(): Promise<void> {
-  const { rows } = await pool.query('SELECT name FROM migrations');
+async function fetchHistoricMigrations({
+  migrationsTableName,
+}: IConfig): Promise<void> {
+  const { rows } = await pool.query(`SELECT name FROM ${migrationsTableName}`);
   rows.forEach((row) => historicMigrations.add(row.name));
 }
 
-async function getMigrationFileNames(): Promise<string[]> {
-  if (!fsSync.existsSync('db/migrations')) {
+async function getMigrationFileNames({
+  rootDirectory,
+  migrationsDirectory,
+}: IConfig): Promise<string[]> {
+  if (!fsSync.existsSync(`${rootDirectory}/${migrationsDirectory}`)) {
     init();
   }
-  const files = await fs.readdir('db/migrations');
+  const files = await fs.readdir(`${rootDirectory}/${migrationsDirectory}`);
   return files.sort(
     (a, b) => parseInt(a.split('-')[0]) - parseInt(b.split('-')[0]),
   );
 }
 
-async function determinePendingMigrations(): Promise<string[]> {
-  const files = await getMigrationFileNames();
+async function determinePendingMigrations(config: IConfig): Promise<string[]> {
+  const files = await getMigrationFileNames(config);
   const pendingMigrations = files.filter(
     (file) => !historicMigrations.has(file),
   );
   return pendingMigrations;
 }
 
-async function runMigration(migration: string): Promise<void> {
-  const filePath = `db/migrations/${migration}`;
+async function runMigration({
+  migration,
+  config: { rootDirectory, migrationsDirectory, migrationsTableName },
+}: {
+  migration: string;
+  config: IConfig;
+}): Promise<void> {
+  const filePath = `${rootDirectory}/${migrationsDirectory}/${migration}`;
   const file = await fs.readFile(filePath, 'utf-8');
   await client.query(file);
   const { rows } = await client.query(
-    'INSERT INTO migrations (name) VALUES ($1) RETURNING id;',
+    `INSERT INTO ${migrationsTableName} (name) VALUES ($1) RETURNING id;`,
     [migration],
   );
   console.log(
@@ -65,15 +78,17 @@ async function runMigration(migration: string): Promise<void> {
 
 async function transact({
   pendingMigrations,
+  config,
 }: {
   pendingMigrations: string[];
+  config: IConfig;
 }): Promise<void> {
   try {
     await client.query('BEGIN');
     console.log('\n');
 
     for (const migration of pendingMigrations) {
-      await runMigration(migration);
+      await runMigration({ migration, config });
     }
 
     console.log('\n');
@@ -90,8 +105,8 @@ async function transact({
   }
 }
 
-async function runMigrations(): Promise<void> {
-  const pendingMigrations = await determinePendingMigrations();
+async function runMigrations(config: IConfig): Promise<void> {
+  const pendingMigrations = await determinePendingMigrations(config);
 
   if (!pendingMigrations.length) {
     console.log('\nNo migrations to run\n');
@@ -100,5 +115,5 @@ async function runMigrations(): Promise<void> {
   }
 
   await confirmation(pendingMigrations);
-  await transact({ pendingMigrations });
+  await transact({ pendingMigrations, config });
 }

@@ -1,18 +1,49 @@
 import fs from 'fs';
-export default function (): void {
-  if (!fs.existsSync('db')) {
-    fs.mkdirSync('db');
+import config from '../config.js';
+
+export default function (createConfigFile = false): void {
+  if (createConfigFile) {
+    fs.writeFileSync(
+      '.postgraterc',
+      JSON.stringify(
+        {
+          rootDirectory: 'db',
+          migrationsDirectory: 'migrations',
+          rollbacksDirectory: 'rollbacks',
+          autoCreateRollbacks: true,
+          migrationsTableName: 'migrations',
+        },
+        null,
+        2,
+      ),
+    );
   }
 
-  if (!fs.existsSync('db/migrations')) {
-    fs.mkdirSync('db/migrations', { recursive: true });
+  const {
+    rootDirectory,
+    migrationsDirectory,
+    rollbacksDirectory,
+    autoCreateRollbacks,
+  } = config();
+
+  if (!fs.existsSync(rootDirectory)) {
+    fs.mkdirSync(rootDirectory);
   }
 
-  if (!fs.existsSync('db/rollbacks')) {
-    fs.mkdirSync('db/rollbacks');
+  if (!fs.existsSync(`${rootDirectory}/${migrationsDirectory}`)) {
+    fs.mkdirSync(`${rootDirectory}/${migrationsDirectory}`, {
+      recursive: true,
+    });
+  }
+
+  if (
+    !fs.existsSync(`${rootDirectory}/${rollbacksDirectory}`) &&
+    autoCreateRollbacks
+  ) {
+    fs.mkdirSync(`${rootDirectory}/${rollbacksDirectory}`);
   }
 
   console.log(`
-✨ Initialized postgrate & created \`db\` folder at root of project directory! ✨
+✨ Initialized postgrate & created \`${rootDirectory}\` folder at root of project directory! ✨
 `);
 }

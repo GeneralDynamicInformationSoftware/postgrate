@@ -1,8 +1,11 @@
+import config from '../config.js';
 import pool from '../modules/pool.module.js';
 
 export default async function () {
+  const { migrationsTableName } = config();
+
   const { rows } = await pool.query(
-    'SELECT name, id, created_at FROM migrations ORDER BY id DESC',
+    `SELECT name, id, created_at FROM ${migrationsTableName} ORDER BY id DESC`,
   );
 
   if (!rows.length) {

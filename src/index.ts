@@ -7,7 +7,7 @@ const [command, second] = args;
 switch (command) {
   case '-i':
   case 'init':
-    init();
+    init(true);
     break;
 
   case '-m':
