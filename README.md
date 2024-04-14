@@ -97,6 +97,7 @@ here are some details about each config option:
 - rollbackDirectory: Override the default rollbacks directory name.
 - autoCreateRollbacks: Set to true to automatically create rollback files.
 - migrationsTableName: Name of the table created in your database.
+- seedDirectory: Directory to use to store the seed file.
 
 #
 
@@ -196,10 +197,15 @@ Essentially, you will need to do the following:
 
 ### `migrationsTableName`
 
-The `migrationsTableName` option allows you to set a cusom table name in which
+The `migrationsTableName` option allows you to set a custom table name in which
 to store migration records. Make sure that this name does not conflict with
 other tables in your database. Once set, there is currently no way to update
 this configuration option within a project.
+
+### `seedDirectory`
+
+The `seedDirectory` option is how you set `seed` directory name. It can contain
+a file called `seed.sql` that you can run to seed data into the database.
 
 ## Commands
 

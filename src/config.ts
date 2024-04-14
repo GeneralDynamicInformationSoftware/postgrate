@@ -25,4 +25,5 @@ export interface IConfig {
   rollbacksDirectory: string;
   autoCreateRollbacks: boolean;
   migrationsTableName: string;
+  seedDirectory?: string;
 }

@@ -1,5 +1,13 @@
 import { expect, it, describe, vi, afterEach } from 'vitest';
-import { help, init, list, make, rollback, run } from '../commands/index.js';
+import {
+  help,
+  init,
+  list,
+  make,
+  rollback,
+  run,
+  seed,
+} from '../commands/index.js';
 import { parser } from '../modules/index.js';
 
 describe('Parser', () => {
@@ -52,6 +60,23 @@ describe('Parser', () => {
 
     parser({ command: '-r' });
     expect(run).toHaveBeenCalledTimes(2);
+  });
+
+  it('should seed upon `seed` and `-s`', () => {
+    vi.mock('../commands/index.js', () => {
+      return {
+        init: vi.fn(),
+        make: vi.fn(),
+        run: vi.fn(),
+        seed: vi.fn(),
+      };
+    });
+
+    parser({ command: 'seed' });
+    expect(seed).toHaveBeenCalledTimes(1);
+
+    parser({ command: '-s' });
+    expect(seed).toHaveBeenCalledTimes(2);
   });
 
   it('should rollback upon `rollback` and `-rb`', () => {
@@ -116,6 +141,7 @@ describe('Parser', () => {
         init: vi.fn(),
         make: vi.fn(),
         run: vi.fn(),
+        seed: vi.fn(),
         rollback: vi.fn(),
         list: vi.fn(),
         help: vi.fn(),
