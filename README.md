@@ -204,8 +204,8 @@ this configuration option within a project.
 
 ### `seedDirectory`
 
-The `seedDirectory` option is how you set `seed` directory name. It can contain
-a file called `seed.sql` that you can run to seed data into the database.
+The `seedDirectory` option is how you set `seed` directory name. It should
+contain `.sql` files that add data to the db.
 
 ## Commands
 
@@ -228,6 +228,7 @@ Commands:
   -m,  make      Create a migration file
   -r,  run       Run all pending migrations
   -rb, rollback  Rollback a migration
+  -s, seed       Run a seed file
 
 Examples:
   $ postgrate -h
@@ -236,4 +237,5 @@ Examples:
   $ postgrate -m create-users-table
   $ postgrate -r
   $ postgrate -rb 1
+  $ postgrate -s base-seed
 ```
