@@ -15,9 +15,25 @@ export default async function (seedName?: string, resetOption?: boolean) {
       console.error(`${seedName}.sql does not exist!`);
       process.exit(1);
     }
-    await confirmation(`${seedName}.sql`);
+    const resetFilePath = `${rootDirectory}/${seedDirectory}/reset.sql`;
+    if (!fsSync.existsSync(resetFilePath) && resetOption) {
+      console.error(`reset.sql does not exist!`);
+      process.exit(1);
+    }
+    if (resetOption) {
+      await confirmation([`${seedName}.sql`, 'reset.sql']);
+    } else {
+      await confirmation(`${seedName}.sql`);
+    }
+    if(resetOption) {
+      const seed = await fs.readFile(resetFilePath, 'utf-8');
+      await pool.query(seed);
+    }
     const seed = await fs.readFile(seedFilePath, 'utf-8');
     await pool.query(seed);
+    if(resetOption) {
+      console.log(`\nDatabase truncated\n`);
+    }
     console.log(`\nDatabase seeded\n`);
     pool.end();
   } else {
