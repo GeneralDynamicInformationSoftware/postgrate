@@ -8,7 +8,7 @@ import {
   seed,
 } from '../commands/index.js';
 
-export default async ({ command, second }: IParserInput) => {
+export default async ({ command, second, third }: IParserInput) => {
   switch (command) {
     case '-i':
     case 'init':
@@ -42,7 +42,7 @@ export default async ({ command, second }: IParserInput) => {
 
     case '-s':
     case 'seed':
-      seed();
+      seed(second, !!third);
       break;
 
     default:
@@ -56,4 +56,5 @@ export default async ({ command, second }: IParserInput) => {
 interface IParserInput {
   command: string;
   second?: string;
+  third?: string;
 }

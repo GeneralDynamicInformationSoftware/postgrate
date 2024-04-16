@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import Config from '../config';
 import { confirmation, pool } from '../modules';
 
-export default async function (seedName?: string) {
+export default async function (seedName?: string, resetOption?: boolean) {
   const { rootDirectory, seedDirectory } = Config();
   if (!seedDirectory) {
     console.error(`Seed directory does not exist!`);
@@ -15,7 +15,7 @@ export default async function (seedName?: string) {
       console.error(`${seedName}.sql does not exist!`);
       process.exit(1);
     }
-    await confirmation('seed.sql');
+    await confirmation(`${seedName}.sql`);
     const seed = await fs.readFile(seedFilePath, 'utf-8');
     await pool.query(seed);
     console.log(`\nDatabase seeded\n`);
