@@ -97,6 +97,7 @@ here are some details about each config option:
 - rollbackDirectory: Override the default rollbacks directory name.
 - autoCreateRollbacks: Set to true to automatically create rollback files.
 - migrationsTableName: Name of the table created in your database.
+- seedDirectory: Directory to use to store the seed file.
 
 #
 
@@ -196,10 +197,15 @@ Essentially, you will need to do the following:
 
 ### `migrationsTableName`
 
-The `migrationsTableName` option allows you to set a cusom table name in which
+The `migrationsTableName` option allows you to set a custom table name in which
 to store migration records. Make sure that this name does not conflict with
 other tables in your database. Once set, there is currently no way to update
 this configuration option within a project.
+
+### `seedDirectory`
+
+The `seedDirectory` option is how you set `seed` directory name. It should
+contain `.sql` files that add data to the db.
 
 ## Commands
 
@@ -222,6 +228,7 @@ Commands:
   -m,  make      Create a migration file
   -r,  run       Run all pending migrations
   -rb, rollback  Rollback a migration
+  -s, seed       Run a seed file
 
 Examples:
   $ postgrate -h
@@ -230,4 +237,5 @@ Examples:
   $ postgrate -m create-users-table
   $ postgrate -r
   $ postgrate -rb 1
+  $ postgrate -s base-seed
 ```
