@@ -1,7 +1,7 @@
 import fsSync from 'fs';
 import fs from 'fs/promises';
-import Config from '../config';
-import { confirmation, pool } from '../modules';
+import Config from '../config.js';
+import { confirmation, pool } from '../modules/index.js';
 
 export default async function (seedName?: string, resetOption?: boolean) {
   const { rootDirectory, seedDirectory } = Config();
@@ -25,13 +25,13 @@ export default async function (seedName?: string, resetOption?: boolean) {
     } else {
       await confirmation(`${seedName}.sql`);
     }
-    if(resetOption) {
+    if (resetOption) {
       const seed = await fs.readFile(resetFilePath, 'utf-8');
       await pool.query(seed);
     }
     const seed = await fs.readFile(seedFilePath, 'utf-8');
     await pool.query(seed);
-    if(resetOption) {
+    if (resetOption) {
       console.log(`\nDatabase truncated\n`);
     }
     console.log(`\nDatabase seeded\n`);

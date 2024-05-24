@@ -26,7 +26,7 @@ export default async function () {
   } else {
     const files = await fs.readdir(seedDirectory);
 
-    console.log('\NSeeds:\n');
+    console.log('\nSeeds:\n');
 
     if (files.length === 0) {
       console.error(`\nNo seeds found in ${seedDirectory}\n`);
