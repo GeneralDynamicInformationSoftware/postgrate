@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import pkg from 'pg';
-import config from '../config';
+import config from '../config.js';
 
 const { dbEnvKey } = config();
 

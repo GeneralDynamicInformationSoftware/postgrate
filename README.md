@@ -26,7 +26,8 @@ After installation, make sure that you have a `.env` file that looks like this:
 PG_DATABASE_URL=<your postgres connection url>
 ```
 
-The key defaults to `PG_DATABASE_URL`, but the `dbEnvKey` option can be used to set it to anything else.
+The key defaults to `PG_DATABASE_URL`, but the `dbEnvKey` option can be used to
+set it to anything else.
 
 After installation, run the following command to initialize Postgrate in your
 project directory and create necessary configuration files:
@@ -206,7 +207,8 @@ this configuration option within a project.
 
 ### `dbEnvKey`
 
-Allows you to set the key used in your `.env` file. Defaults to `PG_DATABASE_URL`.
+Allows you to set the key used in your `.env` file. Defaults to
+`PG_DATABASE_URL`.
 
 **E.g.**
 
@@ -217,7 +219,7 @@ Allows you to set the key used in your `.env` file. Defaults to `PG_DATABASE_URL
 Output:
 
 ```ts
-connectionString: process.env.DEV_PG_DATABASE_URL
+connectionString: process.env.DEV_PG_DATABASE_URL;
 ```
 
 ## Commands
