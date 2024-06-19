@@ -2,8 +2,8 @@
 import { parser } from './modules/index.js';
 
 const args = process.argv.slice(2);
-const [command, second] = args;
+const [command, second, third] = args;
 
-await parser({ command, second });
+await parser({ command, second, third });
 
 process.exit(0);
