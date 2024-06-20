@@ -7,6 +7,7 @@ export default (): IConfig => {
     rollbacksDirectory: 'rollbacks',
     autoCreateRollbacks: true,
     migrationsTableName: 'migrations',
+    dbEnvKey: 'PG_DATABASE_URL',
   };
 
   if (fs.existsSync('.postgraterc')) {
@@ -25,4 +26,5 @@ export interface IConfig {
   rollbacksDirectory: string;
   autoCreateRollbacks: boolean;
   migrationsTableName: string;
+  dbEnvKey: string;
 }
