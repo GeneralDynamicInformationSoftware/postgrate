@@ -20,11 +20,14 @@ $ yarn add postgrate
 
 ## Basic Usage
 
-After insallation, make sure that you have a `.env` file that looks like this:
+After installation, make sure that you have a `.env` file that looks like this:
 
 ```Bash
 PG_DATABASE_URL=<your postgres connection url>
 ```
+
+The key defaults to `PG_DATABASE_URL`, but the `dbEnvKey` option can be used to
+set it to anything else.
 
 After installation, run the following command to initialize Postgrate in your
 project directory and create necessary configuration files:
@@ -82,7 +85,8 @@ Here is an example configuration file with the package defaults:
   "migrationsDirectory": "migrations",
   "rollbackDirectory": "rollbacks",
   "autoCreateRollbacks": true,
-  "migrationsTableName": "migrations"
+  "migrationsTableName": "migrations",
+  "dbEnvKey": "PG_DATABASE_URL"
 }
 ```
 
@@ -200,6 +204,23 @@ The `migrationsTableName` option allows you to set a cusom table name in which
 to store migration records. Make sure that this name does not conflict with
 other tables in your database. Once set, there is currently no way to update
 this configuration option within a project.
+
+### `dbEnvKey`
+
+Allows you to set the key used in your `.env` file. Defaults to
+`PG_DATABASE_URL`.
+
+**E.g.**
+
+```json
+"dbEnvKey": "DEV_PG_DATABASE_URL"
+```
+
+Output:
+
+```ts
+connectionString: process.env.DEV_PG_DATABASE_URL;
+```
 
 ## Commands
 
