@@ -1,6 +1,14 @@
-import { help, init, list, make, rollback, run } from '../commands/index.js';
+import {
+  help,
+  init,
+  list,
+  make,
+  rollback,
+  run,
+  compose,
+} from '../commands/index.js';
 
-export default async ({ command, second }: IParserInput) => {
+export default async ({ command, second, third }: IParserInput) => {
   switch (command) {
     case '-i':
     case 'init':
@@ -20,6 +28,11 @@ export default async ({ command, second }: IParserInput) => {
     case '-rb':
     case 'rollback':
       await rollback(second!);
+      break;
+
+    case '-c':
+    case 'compose':
+      await compose(second!, third);
       break;
 
     case '-l':
@@ -43,4 +56,5 @@ export default async ({ command, second }: IParserInput) => {
 interface IParserInput {
   command: string;
   second?: string;
+  third?: string;
 }
